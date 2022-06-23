@@ -18,7 +18,7 @@ function Sidebar() {
     <div className='sidebar'>        
  <div className='sidebar__top'>
     <img src='https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=412&q=80' alt=''/>
-    <Avatar src={user.photoUrl} className='sidebar__avatar'>
+    <Avatar src={user.photoURL} className='sidebar__avatar'>
         {/* if the user as no url photo then use the first character of the email */}
         {user.email[0]}
     </Avatar>

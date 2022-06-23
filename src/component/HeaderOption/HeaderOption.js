@@ -7,14 +7,15 @@ import './HeaderOption.css';
 function HeaderOption({avatar, Icon, title, onClick}) {
   const user = useSelector(selectUser);
 
+
   return (
     <div onClick={onClick} className='headerOption'>
         {/* this will render the icon if we pass in the icon props that's what the && is for */}
         {Icon && <Icon className='headerOption__icon'/> }
         {/* if i pass an  avatar then go ahead and do the following */}
         {avatar &&(
-            <Avatar className='headerOption__icon'>
-                            {user?.email[0]} 
+            <Avatar className='headerOption__icon'src="">
+              {(user)? user.email[0]:"" || (user)? user.photoURL:""}
 
             </Avatar>
         )}
