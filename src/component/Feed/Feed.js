@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Feed.css';
 import CreateIcon from '@mui/icons-material/Create';
 import InputOption from '../InputOption/InputOption';
@@ -7,17 +7,50 @@ import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import CalendarViewDayIcon from '@mui/icons-material/CalendarViewDay';
 import Post from '../Post/Post';
-
+import {db} from "../../firebase";
+import firebase from 'firebase/compat/app';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../features/userSlice';
+import FlipMove from 'react-flip-move';
 
 
 
 
 
 function Feed() {
+    const user =useSelector(selectUser);
     const [posts, setPosts]= useState([]);
+    const [input, setInput] =useState("");
+
+    // connecting to firebase db... what this piece of code does is that it will 
+    // create a realtime listener to firebase that will go into the collection of posts 
+    // and get a snap shot on the table any time a post is created, edited, or deleted and set it 
+    // on the feeds
+    useEffect(() => {
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot =>(
+            setPosts(snapshot.docs.map(doc =>(
+                {
+                    id:doc.id,
+                    data:doc.data(),
+                }
+            )))
+        ))
+    
+     
+    }, [])
+    
 
     const sendPost =e =>{
         e.preventDefault();
+        db.collection('posts').add({
+            
+            name:user.displayName,
+            description: user.email,
+            message:input,
+            photoUrl: user.photoURL || "",
+            timestamp:firebase.firestore.FieldValue.serverTimestamp()
+        })
+        setInput("")
     }
 
   return (
@@ -26,7 +59,7 @@ function Feed() {
         <div className='feed__input'>
             <CreateIcon/>
             <form>
-                <input type="text"/>
+                <input value={input} onChange={e =>setInput(e.target.value)}  type="text"/>
                 <button onClick={sendPost} type='submit'>Send</button>
             </form>
         </div>
@@ -40,13 +73,20 @@ function Feed() {
 
         </div>
         </div>
-        {posts.map((post)=>
-            <Post/>
+        <FlipMove>
+        {posts.map(({id, data:{ name, description, message, photoUrl}})=>
+            <Post
+            key={id}
+            name={ name}
+            description={description}
+            message={message}
+            photoUrl={photoUrl}
+            />
         )}
-        <Post name="Bassey Bartholomew" 
-        description="This is a test"
-        message="WOW this worked"
-        />
+
+        </FlipMove>
+    
+     
     </div>
   )
 }
